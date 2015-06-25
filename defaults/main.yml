@@ -1,0 +1,19 @@
+---
+# defaults file for ansible-docker_rsyncd
+
+# name used for the docker container
+docker_rsyncd_dockername: "rsyncd"
+
+# user used as owner of the rsync folder (and id)
+docker_rsyncd_user: "myuser"
+docker_rsyncd_userid: 1001
+# group used as owner of the rsync folder (and id)
+docker_rsyncd_group: "users"
+docker_rsyncd_groupid: 100
+
+# name of the rsync deamon
+docker_rsyncd_deamonname: "rsync"
+# port for the rsync deamon
+docker_rsyncd_port: 873
+# folder where files sync
+docker_rsyncd_dir: "/mnt/rsync"

@@ -1,0 +1,34 @@
+---
+# tasks file for ansible-docker_rsyncd
+
+- name: thomfab/docker_rsyncd | check if previous instance exists
+  sudo: yes
+  shell: docker ps -a | grep {{ docker_rsyncd_dockername }} | wc -l
+  register: instances_running
+  ignore_errors: True
+
+- name: thomfab/docker_rsyncd | check if image exists
+  sudo: yes
+  shell: docker images | grep thomfab/docker-rsyncd | wc -l
+  register: image_pulled
+  ignore_errors: True
+
+- name: thomfab/docker_rsyncd | pull thomfab/docker-rsyncd image
+  sudo: yes
+  command: docker pull thomfab/docker-rsyncd
+  when: image_pulled.stdout == "0"
+
+- name: thomfab/docker_rsyncd | make sure backup dir exists
+  sudo: yes
+  file: path={{ docker_rsyncd_dir }} owner={{ docker_rsyncd_user }} group={{ docker_rsyncd_group }} mode=0775 state=directory
+
+- name: thomfab/docker_rsyncd | start instance
+  sudo: yes
+  command: docker run -d --name="{{ docker_rsyncd_dockername }}" \
+          -p {{ docker_rsyncd_port }}:873 \
+          -e VOLUME="{{ docker_rsyncd_deamonname }}" \
+          -e OWNER={{ docker_rsyncd_userid }} \
+          -e GROUP={{ docker_rsyncd_groupid }} \
+          -v {{ docker_rsyncd_dir }}:/volume \
+          thomfab/docker-rsyncd
+  when: instances_running.stdout == "0"
